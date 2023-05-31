@@ -1,0 +1,100 @@
+{% extends 'base.html' %} 
+{% block content %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.50.1/dist/full.css" rel="stylesheet" type="text/css" />
+    <div style="position: fixed; top: 80px; right: 20px;">
+      <a href="/dashboard/all" class="inline-block bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700">edit posts</a>
+    </div>
+    
+
+    <body class="bg-gray-200">
+        <h1 class="text-3xl font-bold mb-4 text-white">Post new Job</h1>
+
+        <form method="post" class="max-w-3xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
+          {% csrf_token %}
+          
+          <div class="mb-6">
+            <label for="{{ form.title.id_for_label }}" class="mb-2 text-xl font-bold tracking-tight text-white">Job Title</label>
+            <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="w-full bg-gray-700 border border-gray-700 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:shadow-outline" value="{% if form.title.value %}{{ form.title.value }}{% endif %}">
+          </div>
+          
+          <div class="mb-6">
+            <label for="{{ form.company.id_for_label }}" class="mb-2 text-xl font-bold tracking-tight text-white">Company Name</label>
+            <input type="text" name="{{ form.company.name }}" id="{{ form.company.id_for_label }}" class="w-full bg-gray-700 border border-gray-700 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:shadow-outline" value="{% if form.company.value %}{{ form.company.value }}{% endif %}">
+          </div>
+        
+          <div class="mb-6">
+            <label for="{{ form.job_type.id_for_label }}" class="mb-2 text-xl font-bold tracking-tight text-white">Job Type</label>
+            <div class="relative">
+              <select name="job_type" id="{{ form.job_type.id_for_label }}" class="w-full bg-gray-700 border border-gray-700 text-white py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-gray-800 focus:border-gray-900">
+                <option value="full_time">Full Time</option>
+                <option value="part_time">Part Time</option>
+                <option value="contract">Contract</option>
+                <option value="internship">Internship</option>
+                <option value="freelance">Freelance</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4z"/></svg>
+              </div>
+            </div>
+          </div>
+        
+          <div class="mb-6">
+            <label for="{{ form.description.id_for_label }}" class="mb-2 text-xl font-bold tracking-tight text-white">Job Description</label>
+            <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="w-full bg-gray-700 border border-gray-700 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:shadow-outline" rows="5">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+          </div>
+        <style>
+          .bg-gradient-blue-green {
+            background: linear-gradient(to right, #4299e1, #38b2ac);
+          }
+          
+          .bg-gradient-blue-green:hover {
+            background: #4299e1;
+          }
+          
+          .bg-gradient-blue-green:active {
+            background: #2c5282;
+          }
+          
+        </style>
+          <div class="flex items-center justify-center">
+            <button type="submit" name="post_job" class="bg-gradient-blue-green text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+              Post Job
+            </button>
+            
+            
+          </div>
+        
+        </form>
+        
+        
+          
+          
+    </div>
+
+    <div class="container mx-auto mt-8">
+      <h1 style="color: purple" class="text-3xl font-bold mb-4 text-purple">Your Job Posts</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for job_post in job_posts %}
+              <div class="max-w-sm p-6 bg-gray-800 border border-gray-700 rounded-lg shadow">
+                  <div class="card-header">
+                      <h5 class="mb-2 text-2xl font-bold tracking-tight text-white">{{ job_post.title }}</h5>
+                      <h4 class="card-subtitle text-lg font-medium text-gray-300">{{ job_post.company }}</h4>
+                  </div>
+                  <div class="card-body">
+                      <p class="card-text text-gray-400">{{ job_post.description|truncatechars:100 }}.</p>
+                      <p class="card-text text-gray-400">Posted by {{ job_post.user.username }} on {{ job_post.created_at }}</p>
+                  </div>
+                  <div class="card-footer">
+                      <form method="post">
+                          {% csrf_token %}
+                          <button type="submit" name="delete_job" value="{{ job_post.id }}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Delete</button>
+                      </form>
+                  </div>
+              </div>
+          {% endfor %}
+      </div>
+  </div>
+  
+
+
+{% endblock content %}

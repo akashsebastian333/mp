@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="max-w-lg text-3xl font-semibold leading-relaxed text-gray-900 dark:text-white transform transition-all ">{{ job_post.title }}</h1>
+
+<p class="text-xl font-semibold text-blue-600/100 dark:text-blue-500/100 transform hover:scale-105 transition-all duration-500 cursor-pointer inline-block bg-gray-900 px-2 py-1 rounded-lg shadow-md hover:shadow-lg"> {{ job_post.company }} </p>
+
+<p class="text-gray-500 whitespace-pre-line dark:text-gray-400">{{ job_post.description }}</p>
+
+<!-- for job poster -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-4">
+  {% if request.user == job_post.user %}
+    {% if job_post.submission_set.exists %}
+      <h2 class="text-2xl font-bold text-purple-600 mb-4">Submissions:</h2>
+      <ul class="list-disc pl-6 mb-4">
+      {% for submission in job_post.submission_set.all %}
+        <li class="text-lg text-gray-900 dark:text-white mb-2 hover:text-purple-600 transition duration-300 ease-in-out">
+          <span class="font-bold">{{ submission.user.username }}</span> - 
+          <a href="{{ submission.resume.url }}" class="text-purple-600 hover:text-purple-400 transition duration-300 ease-in-out">Download resume</a>
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-lg text-purple-600 mb-4">No submissions yet.</p>
+    {% endif %}
+  {% else %}
+    <h2 class="text-2xl font-bold text-purple-600 hidden mb-4"></h2>
+  </div>
+
+  <div class="bg-gray-800 rounded-md shadow-lg p-4">
+    <h2 class="text-lg font-medium text-white mb-4">You have already applied for this job.</h2>
+    <p class="text-gray-500">Thank you for your application.</p>
+  </div>
+  
+  {% endif %}
+{% endblock %}

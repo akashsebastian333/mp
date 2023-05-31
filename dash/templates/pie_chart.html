@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Filter form -->
+<!-- Filter form -->
+
+<h1 class="text-3xl text-purple-900 font-bold mb-6">ANalysis</h1>
+<div class="w-full md:w-2/3 mx-auto">
+  <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart_data = {{ chart_data|safe }};
+  var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: chart_data.labels,
+      datasets: [{
+        data: chart_data.data,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.8)',
+          'rgba(54, 162, 235, 0.8)',
+          'rgba(255, 206, 86, 0.8)',
+          'rgba(75, 192, 192, 0.8)',
+          'rgba(153, 102, 255, 0.8)',
+          'rgba(255, 159, 64, 0.8)'
+        ],
+        borderColor: 'white',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        position: 'right',
+        labels: {
+          fontColor: 'black',
+          fontSize: 14,
+          fontFamily: 'sans-serif'
+        }
+      },
+      animation: {
+        animateRotate: true,
+        animateScale: true
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var label = data.labels[tooltipItem.index] || '';
+            var value = data.datasets[0].data[tooltipItem.index] || '';
+            return label + ': ' + value;
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<form method="GET" class="relative inline-block">
+  <label for="job-title-filter" class="mr-2 text-gray-500">Filter by job title:</label>
+  <div class="inline-block relative">
+    <select id="job-title-filter" name="job_title" class="appearance-none bg-gray-200 border border-gray-200 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+      <option value="">Choose</option>
+      {% for job_title in unique_job_titles %}
+        <option value="{{ job_title }}" {% if job_title == selected_job_title %}selected{% endif %}>{{ job_title }}</option>
+      {% endfor %}
+    </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+      <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M9.292 11.707a1 1 0 0 0 1.414 0l3-3a1 1 0 0 0-1.414-1.414L10 9.586l-2.293-2.293a1 1 0 0 0-1.414 1.414l3 3z"/>
+      </svg>
+    </div>
+  </div>
+  <button type="submit" class="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Filter</button>
+</form>
+
+<br><br>
+
+{% if selected_job_title %}
+<div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+  <div class="px-6 py-4">
+    <h2 class="text-2xl font-bold text-purple-600 mb-2">Submissions for {{ selected_job_title }}</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto border-collapse">
+        <thead class="text-left">
+          <tr class="border-b-2">
+            <th class="px-4 py-3 font-bold uppercase text-sm text-gray-500 tracking-wider">Company</th>
+            <th class="px-4 py-3 font-bold uppercase text-sm text-gray-500 tracking-wider">Submission Date</th>
+            <th class="px-4 py-3 font-bold uppercase text-sm text-gray-500 tracking-wider">Resume</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm font-normal text-gray-200">
+          {% for submission in submissions_data %}
+          <tr class="border-b hover:bg-gray-700">
+            <td class="px-4 py-3">{{ submission.job_post.title }}</td>
+            <td class="px-4 py-3">{{ submission.created_at|date:'M d, Y' }}</td>
+            <td class="px-4 py-3">
+              <a href="{{ submission.resume.url }}" class="text-blue-400 hover:text-blue-300 hover:underline">{{ submission.resume.name }}</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="px-4 py-3 text-center">No submissions found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

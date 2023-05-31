@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if profile.full_name == "" or profile.address == "" or profile.skills == "" or profile.education == "" or profile.phoneno == "" %}
+  <script>
+    alert("Please complete your profile to use this application.");
+  </script>
+{% endif %}
+
+<div class="flex flex-col items-center">
+  <a href="/dashboard/profile/{{profile.user}}">
+    <h2 class="text-3xl font-bold text-purple-800 mt-8 mb-4">{{ profile.user }}'s Profile</h2>
+  </a>
+
+  <div class="mt-8 w-96">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      {% if profile.avatar %}
+      <img src="/dashboard{{ profile.avatar.url }}" alt="Profile picture" class="w-32 h-32 mx-auto mb-4 rounded-full">
+      {% endif %}
+      <form method="POST" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label for="id_avatar" class="block font-medium text-lg text-gray-700 dark:text-gray-300 mb-2">Change profile picture:</label>
+          <div class="flex items-center justify-center">
+            <label for="file-upload" class="px-4 py-2 bg-purple-600 rounded-md text-white hover:bg-purple-700 transition duration-500 ease-in-out cursor-pointer">
+              <span>Browse</span>
+              <input id="file-upload" name="avatar" type="file" accept="image/*" class="sr-only">
+            </label>
+            <span class="text-gray-500 dark:text-gray-300 text-sm ml-3">PNG, JPG, GIF up to 10MB</span>
+          </div>
+        </div>
+        <div>
+          <label for="{{ form.full_name.id_for_label }}" class="block font-medium text-lg text-purple-700 dark:text-purple-400">Full Name:</label>
+          <input type="text" name="{{ form.full_name.name }}" id="{{ form.full_name.id_for_label }}" value="{{ form.full_name.value }}" class="block w-full px-4 py-2 border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50 transition duration-500 ease-in-out hover:bg-gray-100">
+        </div>
+        <div>
+          <label for="{{ form.address.id_for_label }}" class="block font-medium text-lg text-purple-700 dark:text-purple-400">Address:</label>
+          <input type="text" name="{{ form.address.name }}" id="{{ form.address.id_for_label }}" value="{{ form.address.value }}" class="block w-full px-4 py-2 border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50 transition duration-500 ease-in-out hover:bg-gray-100">
+        </div>
+        <div>
+          <label for="{{ form.skills.id_for_label }}" class="block font-medium text-lg text-purple-700 dark:text-purple-400">Skills:</label>
+          <input type="text" name="{{ form.skills.name }}" id="{{ form.skills.id_for_label }}" value="{{ form.skills.value }}" class="block w-full px-4 py-2 border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50 transition duration-500 ease-in-out hover:bg-gray-100">
+        </div>
+        <div>
+          <label for="{{ form.education.id_for_label }}" class="block font-medium text-lg text-purple-700 dark:text-purple-400">Education:</label>
+          <input type="text" name="{{ form.education.name }}" id="{{ form.education.id_for_label }}" value="{{ form.education.value }}" class="block w-full px-4 py-2 border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50 transition duration-500 ease-in-out hover:bg-gray-100">
+        </div>
+        <div>
+          <label for="{{ form.phone_no.id_for_label }}" class="block font-medium text-lg text-purple-700 dark:text-purple-400">Phone Number:</label>
+          <input type="number" name="{{ form.phoneno.name }}" id="{{ form.phone_no.id_for_label }}" value="{{ form.phoneno.value }}" class="block w-full px-4 py-2 border-gray-300 dark:bg-gray-700 dark:border-gray-600 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50 transition duration-500 ease-in-out hover:bg-gray-100">
+        </div>
+        <div class="flex justify-center">
+          <button type="submit" class="px-4 py-2 font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:from-pink-500 hover:to-purple-500 hover:shadow-lg transition duration-300 ease-in-out">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector('form');
+  const inputs = form.querySelectorAll('input');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let isValid = true;
+    inputs.forEach((input) => {
+      if (input.value.trim() === '') {
+        input.classList.add('border-red-500');
+        isValid = false;
+      } else {
+        input.classList.remove('border-red-500');
+      }
+    });
+
+    if (isValid) {
+      form.submit();
+    } else {
+      alert('Please fill in all the fields.');
+    }
+  });
+</script>
+
+<script>
+  const form = document.querySelector('form');
+  const phoneInput = form.querySelector('{{ form.phone_no.id_for_label }}');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!isValidPhoneNumber(phoneInput.value)) {
+      showValidationError(phoneInput, 'Phone number must be a 10-digit number.');
+      return;
+    }
+
+    form.submit();
+  });
+
+  function isValidPhoneNumber(phoneNumber) {
+    const phoneNumberRegex = /^\d{10}$/;
+    return phoneNumberRegex.test(phoneNumber);
+  }
+
+  function showValidationError(input, message) {
+    const errorContainer = document.createElement('div');
+    errorContainer.textContent = message;
+    errorContainer.classList.add('text-red-500', 'text-sm', 'mt-1');
+    input.parentNode.appendChild(errorContainer);
+  }
+</script>
+
+
+
+
+
+{% endblock %}

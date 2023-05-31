@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="bg-gray-900 text-white">
+    <div class="container mx-auto py-8 px-4">
+      <h1 class="text-4xl font-bold text-purple-600 mb-4">Inbox</h1>
+
+      {% if unread_count > 0 %}
+        <span class="bg-red-500 text-white rounded-full px-2 py-1 mb-4">Messages</span>
+      {% endif %}
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for message in messages|dictsortreversed:"sender__username" %}
+          {% if message.sender__username != user.username %}
+            <div class="bg-gray-800 shadow-lg rounded-lg p-6 transform hover:scale-105 transition duration-300 ease-in-out">
+              <a href="{% url 'user_messages' message.sender__username %}" class="text-purple-600 hover:text-purple-300 md:text-lg lg:text-xl">{{ message.sender__username }}</a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

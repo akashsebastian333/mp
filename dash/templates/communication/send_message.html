@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="text-3xl font-bold text-purple-600 my-8">Send Message</h1>
+
+  <form method="post" class="max-w-lg mx-auto my-8">
+    {% csrf_token %}
+    <div class="mb-4">
+      <label class="block text-gray-700 font-bold mb-2" for="id_subject">Subject</label>
+      <input type="text" name="subject" id="id_subject" class="w-full px-4 py-2 text-gray-700 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:bg-white focus:border-purple-500" value="{{ form.subject.value }}">
+    </div>
+    <div type="hidden" class="mb-4 hidden">
+      {{ form.recipient }}
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 font-bold mb-2" for="id_body">Message</label>
+      <textarea name="body" id="id_body" class="w-full px-4 py-3 text-gray-700 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:bg-white focus:border-purple-500 resize-none">{{ form.body.value }}</textarea>
+    </div>
+    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Send Message</button>
+  </form>
+{% endblock %}
